@@ -14,6 +14,7 @@
 import json
 import logging
 import urlparse
+import re
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -257,8 +258,28 @@ class Unit(object):
         :param other:   other Unit instance
         :type  other:   pulp_puppet.forge.unit.Unit
 
-        :return:        whatever "cmp" returns
+        :return:        a negative number if the version being compared to has 
+			a higher precedence, positive if lower and 0 if equal
         """
-        my_version = map(int, self.version.split('.'))
-        other_version = map(int, other.version.split('.'))
-        return cmp(my_version, other_version)
+        semver_regex = re.compile('^(0|[1-9]\d*)[.](0|[1-9]\d*)[.](0|[1-9]\d*)(-.+)?$')
+        my_semver = semver_regex.match(self.version)
+        other_semver = semver_regex.match(other.version)
+
+        my_release_tuple = my_semver.group(1,2,3)
+        my_prerelease = my_semver.group(4)
+        other_release_tuple = other_semver.group(1,2,3)
+        other_prerelease = other_semver.group(4)
+
+        release_comparison = cmp(my_release_tuple, other_release_tuple)
+
+        if release_comparison != 0 :
+                return release_comparison
+        else:
+                if  my_prerelease and other_prerelease :
+                        return cmp(my_prerelease, other_prerelease)
+                elif not my_prerelease:
+                        return 1
+                elif not other_prerelease:
+                        return -1
+                else:
+                        return 0
