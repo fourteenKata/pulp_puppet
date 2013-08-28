@@ -261,7 +261,7 @@ class Unit(object):
         :return:        a negative number if the version being compared to has 
 			a higher precedence, positive if lower and 0 if equal
         """
-        semver_regex = re.compile('^(0|[1-9]\d*)[.](0|[1-9]\d*)[.](0|[1-9]\d*)(-.+)?$')
+        semver_regex = re.compile('^(0|[1-9]\d*)[.](0|[1-9]\d*)[.](0|[1-9]\d*)(-[0-9A-Za-z-]+)?$')
         my_semver = semver_regex.match(self.version)
         other_semver = semver_regex.match(other.version)
 
