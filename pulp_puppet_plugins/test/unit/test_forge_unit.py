@@ -158,10 +158,19 @@ class TestToDict(unittest.TestCase):
 class TestCmp(unittest.TestCase):
     @mock.patch('__builtin__.cmp', return_value=1)
     def test_convert_version(self, mock_cmp):
-        self.assertTrue(unit_generator(version='1.2.0') > unit_generator(version='1.1.3'))
+	self.assertTrue(unit_generator(version='1.2.0') > unit_generator(version='1.1.3'))
         mock_cmp.assert_called_once_with([1, 2, 0], [1, 1, 3])
 
-    @mock.patch('__builtin__.cmp', return_value=-1)
+    @raises(*exceptions)	
     def test_different_lengths(self, mock_cmp):
         self.assertTrue(unit_generator(version='1.0.3') < unit_generator(version='1.1'))
         mock_cmp.assert_called_once_with([1, 0, 3], [1, 1])
+
+    def test_different_prerelease(self):
+        self.assertTrue(unit_generator(version='1.0.3-alpha') < unit_generator(version='1.0.3-beta'))
+
+    def test_different_prerelease_with_numbers(self):
+        self.assertTrue(unit_generator(version='1.0.3-12345') < unit_generator(version='1.0.3-beta'))
+
+    def test_prerelease_and_no_prerelease (self):
+        self.assertTrue(unit_generator(version='1.0.3-rc1') < unit_generator(version='1.0.3'))

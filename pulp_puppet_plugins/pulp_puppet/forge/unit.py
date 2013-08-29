@@ -265,9 +265,9 @@ class Unit(object):
         my_semver = semver_regex.match(self.version)
         other_semver = semver_regex.match(other.version)
 
-        my_release_tuple = my_semver.group(1,2,3)
+        my_release_tuple =map(int, my_semver.group(1,2,3))
         my_prerelease = my_semver.group(4)
-        other_release_tuple = other_semver.group(1,2,3)
+        other_release_tuple = map(int, other_semver.group(1,2,3))
         other_prerelease = other_semver.group(4)
 
         release_comparison = cmp(my_release_tuple, other_release_tuple)
