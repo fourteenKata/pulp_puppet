@@ -157,18 +157,16 @@ class TestToDict(unittest.TestCase):
 
 
 class TestCmp(unittest.TestCase):
-    def test_convert_version(self):
-	self.assertTrue(unit_generator(version='1.2.0') > unit_generator(version='1.1.3'))
 
     @raises(Exception)	
-    def test_different_lengths(self):
+    def test_invalid_version(self):
         self.assertTrue(unit_generator(version='1.0.3') < unit_generator(version='1.1'))
 
     def test_different_prerelease(self):
         self.assertTrue(unit_generator(version='1.0.3-alpha') < unit_generator(version='1.0.3-beta'))
 
-    def test_different_prerelease_with_numbers(self):
-        self.assertTrue(unit_generator(version='3.0.3') < unit_generator(version='1.0.3'))
+    def test_different_release_with_numbers(self):
+        self.assertTrue(unit_generator(version='3.0.3') > unit_generator(version='1.0.3'))
 
     def test_different_prerelease_with_numbers(self):
         self.assertTrue(unit_generator(version='1.0.3-12345') < unit_generator(version='1.0.3-beta'))
@@ -176,7 +174,7 @@ class TestCmp(unittest.TestCase):
     def test_release_numerical_precedence(self):
         self.assertTrue(unit_generator(version='0.11.3') > unit_generator(version='0.2.3'))
 
-    def test_release_numerical_precedence(self):
+    def test_release_numerical_precedence_2(self):
         self.assertTrue(unit_generator(version='1.11.6') > unit_generator(version='1.2.3'))
 
     def test_prerelease_and_no_prerelease (self):
