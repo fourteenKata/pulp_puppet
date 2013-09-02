@@ -253,7 +253,7 @@ class Unit(object):
     def __cmp__(self, other):
         """
         Converts versions before doing the comparison. They are strings such as
-        "1.0.0", which we convert to a tuple of ints such as (1, 0, 0).
+        "1.0.0", which we convert to a  list of ints such as [1, 0, 0].
 
         :param other:   other Unit instance
         :type  other:   pulp_puppet.forge.unit.Unit
@@ -265,21 +265,20 @@ class Unit(object):
         my_semver = semver_regex.match(self.version)
         other_semver = semver_regex.match(other.version)
 
-        my_release_tuple =map(int, my_semver.group(1,2,3))
-        my_prerelease = my_semver.group(4)
-        other_release_tuple = map(int, other_semver.group(1,2,3))
+        my_release = map(int, my_semver.group(1,2,3))
+	my_prerelease = my_semver.group(4)
+        other_release = map(int, other_semver.group(1,2,3))
         other_prerelease = other_semver.group(4)
-
-        release_comparison = cmp(my_release_tuple, other_release_tuple)
-
+	
+        release_comparison =  cmp(my_release, other_release)
         if release_comparison != 0 :
                 return release_comparison
         else:
-                if  my_prerelease and other_prerelease :
-                        return cmp(my_prerelease, other_prerelease)
+                if  not (my_prerelease or other_prerelease) :
+                        return 0
                 elif not my_prerelease:
                         return 1
                 elif not other_prerelease:
                         return -1
                 else:
-                        return 0
+                        return cmp(my_prerelease, other_prerelease)
